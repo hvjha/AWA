@@ -1,0 +1,238 @@
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE COMPUTE_WH;
+CREATE DATABASE IF NOT EXISTS SQL_CLASS_8_DATABASE;
+CREATE SCHEMA IF NOT EXISTS SQL_CLASS_8_SCHEMA;
+USE DATABASE SQL_CLASS_8_DATABASE;
+USE SCHEMA SQL_CLASS_8_SCHEMA;
+
+CREATE TABLE IF NOT EXISTS SALES_TRANSACTION(
+    TRANSACTION_ID INT PRIMARY KEY,
+    CATEGORY VARCHAR(50),
+    SUBCATEGORY VARCHAR(50),
+    TRANSACTION_DATE DATE,
+    DELIVERY_DATE DATE,
+    QUANTITY INT,
+    UNIT_PRICE DECIMAL(10,2),
+    TOTAL_SALES DECIMAL(15,2) 
+);
+
+
+INSERT INTO SALES_TRANSACTION(
+    TRANSACTION_ID,
+    CATEGORY,
+    SUBCATEGORY,
+    TRANSACTION_DATE,
+    DELIVERY_DATE,
+    QUANTITY,
+    UNIT_PRICE,
+    TOTAL_SALES
+)
+VALUES 
+(1,'Electronics','Headphones','2025-01-21','2025-01-27',5,100.00,500.00),
+(2,'Electronics','Smartphone','2025-01-22','2025-01-28',2,550.00,1100.00),
+(3,'Electronics','Laptop','2025-01-23','2025-01-29',1,1200.00,1200.00),
+(4,'Electronic Appliances','Microwave','2025-01-24','2025-01-30',3,200.00,600.00),
+(5,'Electronic Appliances','Washing Machine','2025-01-25','2025-01-31',1,750.00,750.00),
+(6,'Electronic Appliances','Refrigerator','2025-01-26','2025-02-01',2,900.00,1800.00),
+(7,'Home Appliances','Vacuum Cleaner','2025-01-27','2025-02-02',4,150.00,600.00),
+(8,'Home Appliances','Air Purifier','2025-01-28','2025-02-03',2,300.00,600.00),
+(9,'Home Appliances','Water Heater','2025-01-29','2025-02-04',3,220.00,660.00),
+(10,'Furniture','Sofa','2025-01-30','2025-02-05',1,800.00,800.00),
+(11,'Furniture','Dining Table','2025-01-31','2025-02-06',1,650.00,650.00),
+(12,'Furniture','Bed','2025-02-01','2025-02-07',2,900.00,1800.00),
+(13,'Furniture','Wardrobe','2025-02-02','2025-02-08',1,700.00,700.00),
+(14,'Electronics','Tablet','2025-02-03','2025-02-09',3,400.00,1200.00),
+(15,'Electronics','Camera','2025-02-04','2025-02-10',2,850.00,1700.00),
+(16,'Electronics','Smartwatch','2025-02-05','2025-02-11',5,250.00,1250.00),
+(17,'Electronic Appliances','Air Conditioner','2025-02-06','2025-02-12',1,1200.00,1200.00),
+(18,'Electronic Appliances','Dishwasher','2025-02-07','2025-02-13',1,950.00,950.00),
+(19,'Electronic Appliances','Water Dispenser','2025-02-08','2025-02-14',2,300.00,600.00),
+(20,'Home Appliances','Mixer Grinder','2025-02-09','2025-02-15',4,120.00,480.00),
+(21,'Home Appliances','Iron','2025-02-10','2025-02-16',3,80.00,240.00),
+(22,'Home Appliances','Coffee Maker','2025-02-11','2025-02-17',2,200.00,400.00),
+(23,'Furniture','Bookshelf','2025-02-12','2025-02-18',1,300.00,300.00),
+(24,'Furniture','TV Stand','2025-02-13','2025-02-19',1,250.00,250.00),
+(25,'Furniture','Office Chair','2025-02-14','2025-02-20',3,180.00,540.00),
+(26,'Electronics','Bluetooth Speaker','2025-02-15','2025-02-21',4,90.00,360.00),
+(27,'Electronics','Gaming Console','2025-02-16','2025-02-22',2,500.00,1000.00),
+(28,'Electronics','Monitor','2025-02-17','2025-02-23',1,300.00,300.00),
+(29,'Electronic Appliances','Toaster','2025-02-18','2025-02-24',5,45.00,225.00),
+(30,'Electronic Appliances','Juicer','2025-02-19','2025-02-25',3,110.00,330.00),
+(31,'Electronic Appliances','Heater','2025-02-20','2025-02-26',2,150.00,300.00),
+(32,'Home Appliances','Ceiling Fan','2025-02-21','2025-02-27',4,70.00,280.00),
+(33,'Home Appliances','Table Fan','2025-02-22','2025-02-28',5,55.00,275.00),
+(34,'Home Appliances','Room Humidifier','2025-02-23','2025-03-01',2,140.00,280.00),
+(35,'Furniture','Study Table','2025-02-24','2025-03-02',1,400.00,400.00),
+(36,'Furniture','Bean Bag','2025-02-25','2025-03-03',2,120.00,240.00),
+(37,'Furniture','Recliner','2025-02-26','2025-03-04',1,850.00,850.00),
+(38,'Electronics','Router','2025-02-27','2025-03-05',3,75.00,225.00),
+(39,'Electronics','Projector','2025-02-28','2025-03-06',1,600.00,600.00),
+(40,'Electronics','External HDD','2025-03-01','2025-03-07',4,95.00,380.00),
+(41,'Electronic Appliances','Induction Stove','2025-03-02','2025-03-08',2,180.00,360.00),
+(42,'Electronic Appliances','Electric Kettle','2025-03-03','2025-03-09',5,40.00,200.00),
+(43,'Electronic Appliances','Hair Dryer','2025-03-04','2025-03-10',3,60.00,180.00),
+(44,'Home Appliances','Washing Basket','2025-03-05','2025-03-11',4,25.00,100.00),
+(45,'Home Appliances','Shoe Rack','2025-03-06','2025-03-12',2,90.00,180.00),
+(46,'Home Appliances','Clothes Steamer','2025-03-07','2025-03-13',1,130.00,130.00),
+(47,'Furniture','Cupboard','2025-03-08','2025-03-14',1,550.00,550.00),
+(48,'Furniture','Side Table','2025-03-09','2025-03-15',2,150.00,300.00),
+(49,'Furniture','Kitchen Cabinet','2025-03-10','2025-03-16',1,600.00,600.00),
+(50,'Electronics','Keyboard','2025-03-11','2025-03-17',5,45.00,225.00),
+(51,'Electronics','Mouse','2025-03-12','2025-03-18',6,25.00,150.00),
+(52,'Electronics','Webcam','2025-03-13','2025-03-19',3,70.00,210.00),
+(53,'Electronic Appliances','Rice Cooker','2025-03-14','2025-03-20',2,160.00,320.00),
+(54,'Electronic Appliances','Blender','2025-03-15','2025-03-21',4,90.00,360.00),
+(55,'Electronic Appliances','Oven Toaster','2025-03-16','2025-03-22',1,250.00,250.00),
+(56,'Home Appliances','Dish Rack','2025-03-17','2025-03-23',3,40.00,120.00),
+(57,'Home Appliances','Mattress','2025-03-18','2025-03-24',1,500.00,500.00),
+(58,'Home Appliances','Curtains','2025-03-19','2025-03-25',4,60.00,240.00),
+(59,'Furniture','Mirror','2025-03-20','2025-03-26',2,200.00,400.00),
+(60,'Furniture','Lamp','2025-03-21','2025-03-27',5,35.00,175.00);
+
+SELECT * FROM SALES_TRANSACTION;
+
+--AGGREGATE FUNCTION---
+SELECT
+    SUM(TOTAL_SALES) AS TOTAL_SALES_AMOUNT
+FROM SALES_TRANSACTION;
+
+SELECT
+    COUNT(TRANSACTION_ID) AS TOTAL_ORDER
+FROM SALES_TRANSACTION;
+
+--WRITE A SQL QUERY TO FIND MINIMUM UNIT SOLD IN THE SALES DATA--
+SELECT
+    MIN(QUANTITY)AS MINIMUM_QUANTITY_SOLD
+FROM SALES_TRANSACTION;
+
+--WRITE A SQL QUERY TO FIND MAXIMUM UNIT SOLD IN THE SALES DATA--
+SELECT
+    MAX(QUANTITY) AS MAX_QUANTITY_SOLD
+FROM SALES_TRANSACTION;
+
+--WRITE A SQL QUERY TO FIND AVERAGE UNIT SOLD IN THE SALES DATA--
+SELECT
+    AVG(QUANTITY) AS AVG_QUANTITY_SOLD
+FROM SALES_TRANSACTION;
+
+SELECT
+    ROUND(AVG(TOTAL_SALES),2) AS AVG_TOTAL_SALES
+FROM SALES_TRANSACTION;
+
+/*YOU ARE GIVE A SALES DATA OF OUR COMPANY YOUR JOB IS TO ANALYSE THE DATA AND RETURN US THE ANALYSIS.
+THE FIRST REQUIREMENT IS TO WRITE A SQL QUERY TO RETURN US ALL THE DATA JUST RELAYTED TO FURNITURE AND HOME APPLIANCES , AFTER RETURNING THAT PARTICULAR DATA WE NEED TO SEE THE DATA WHERE THE TRANSACTION DATE IS AFTER '2025-01-15'
+*/
+SELECT *
+FROM 
+    SALES_TRANSACTION
+WHERE 
+    CATEGORY IN ('Home Appliances','Furniture') 
+    AND TRANSACTION_DATE > '2025-01-15'
+ORDER BY 
+    TOTAL_SALES DESC;
+
+--GROUP BY--
+SELECT SUM(TOTAL_SALES)
+FROM SALES_TRANSACTION;
+
+SELECT
+    CATEGORY,
+    SUM(TOTAL_SALES) AS TOTAL_REVENEW
+FROM SALES_TRANSACTION
+GROUP BY CATEGORY;
+
+/* 
+    You are given the saLes data Of oar comnpany. We have business across multiple              categories. We want to see the sum of total sale value
+    across each category.Give us the category which has highest at the top and then at the      Least one at bottom
+*/
+
+SELECT
+    CATEGORY,
+    SUM(TOTAL_SALES)AS TOTAL_SALES_AMOUNT
+FROM SALES_TRANSACTION
+GROUP BY CATEGORY
+-- ORDER BY TOTAL_SALES_AMOUNT DESC --this approach work only in snowflake 
+ORDER BY SUM(TOTAL_SALES) DESC ; -- THIS APPROACH WORKS ON BOTH SQL WORKBENCH & SNOWFLAKE
+
+/*
+FIND THE TOTAL QUANTITY OF PRODUCT SOLD IN EACH SUBCATEGORY WHERE THE TOTAL SALES AMOUNT IS GREATER THEN 700., YOU NEED TO RETURN THE RESULT IN THE ORDER OF ASCENDING OF QUANTITY SOLD
+*/
+SELECT
+    CATEGORY,
+    SUBCATEGORY,--2
+    SUM(QUANTITY)AS TOTAL_QUANTITY, --2
+    TOTAL_SALES
+FROM SALES_TRANSACTION --1
+WHERE TOTAL_SALES > 500 --3
+GROUP BY SUBCATEGORY,CATEGORY,TOTAL_SALES --4
+ORDER BY SUM(QUANTITY) ASC; --5
+
+/*
+Find the average sale price for each category. and display the resutts in descending order of the average sale price.
+*/
+
+SELECT
+    CATEGORY,
+    ROUND(AVG(TOTAL_SALES),2) AS AVG_SALES_PRICE
+FROM SALES_TRANSACTION
+GROUP BY CATEGORY
+ORDER BY AVG(TOTAL_SALES) DESC;
+
+/* 
+Write a sql query to return the maximum and minimum sale from each subcategory
+*/
+SELECT  
+    SUBCATEGORY,
+    MAX(TOTAL_SALES) AS MAX_SALE,
+    MIN(TOTAL_SALES) AS MIN_SALES
+FROM SALES_TRANSACTION
+GROUP BY SUBCATEGORY
+ORDER BY SUBCATEGORY;
+
+/*
+You are given the sales data of our company. we  need to analyse the time series data of the sales
+Count the number of transaction for each subcategory where the transaction date is after '2025-03-10'
+You need to return the result of only subcategory where  the totat transaction count is greater than 1.
+Return the result by sorting it  In asc order of subcategories,
+*/
+SELECT
+    SUBCATEGORY,
+    TRANSACTION_DATE,
+    COUNT(TRANSACTION_ID) AS TOTAL_TRANSACTION
+FROM SALES_TRANSACTION
+WHERE TRANSACTION_DATE > '2025-03-10'
+GROUP BY SUBCATEGORY,TRANSACTION_DATE
+HAVING COUNT(TRANSACTION_ID) >=1
+ORDER BY SUBCATEGORY ASC;
+
+/*
+Write a query to calculate the total saLes for each category from the SALES. TRANSACTIONS table.
+Also make sure to Include only those transactions where the TRANSACTION_DATE Is atter Febuary 2,2025
+and the total sales are greater than 1øaø.
+Additionally the result should be ordered by total sales  descending Order .
+*/
+
+SELECT
+    CATEGORY,
+    SUBCATEGORY,
+    TRANSACTION_DATE,
+    SUM(TOTAL_SALES) AS TOTAL_SALES_AMOUNT,
+FROM SALES_TRANSACTION
+WHERE TRANSACTION_DATE > '2025-01-01'
+GROUP BY CATEGORY,TRANSACTION_DATE,SUBCATEGORY
+HAVING SUM(TOTAL_SALES) > 1000
+ORDER BY SUM(TOTAL_SALES) DESC
+LIMIT 1;
+
+/*
+Write a query to find the average unit Price Of products for  each subcategory.
+but only for categories 'Etectrontcs' and •Furniture• Include only tnose transactions where the quantity is greater than 1 and sort the result by subcategory in alphabeticaL order .
+*/
+
+SELECT
+    SUBCATEGORY,
+    ROUND(AVG(UNIT_PRICE),2) AS AVG_UNIT_PRICE
+FROM SALES_TRANSACTION
+WHERE CATEGORY IN('Electronics','Furniture') AND QUANTITY > 1
+GROUP BY CATEGORY,SUBCATEGORY,QUANTITY
+ORDER BY SUBCATEGORY ASC;
