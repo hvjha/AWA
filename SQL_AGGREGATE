@@ -1,0 +1,212 @@
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE COMPUTE_WH;
+CREATE DATABASE IF NOT EXISTS CLASS_9;
+CREATE SCHEMA IF NOT EXISTS CLASS_9_SCHEMA;
+USE DATABASE CLASS_9;
+USE SCHEMA CLASS_9_SCHEMA;
+
+CREATE OR REPLACE TABLE sales_data (
+    transaction_id INT PRIMARY KEY,
+    transaction_date DATE,
+    product_category VARCHAR(50),
+    customer_id INT,
+    product_id INT,
+    region VARCHAR(50),
+    sales_amount DECIMAL(10, 2),
+    units_sold INT
+);
+
+
+SELECT * FROM sales_data LIMIT 100;
+CREATE OR REPLACE TABLE SALES_DATA_OUTPUT AS
+SELECT * ,
+    -- TO_CHAR(TRANSACTION_DATE,'YYYY') AS TR_YEAR,
+    YEAR(TRANSACTION_DATE) AS TR_YEAR,
+    -- TO_CHAR(TRANSACTION_DATE,'MMMM') AS TR_MONTH,
+    -- MONTHNAME(TRANSACTION_DATE) AS MONTHNAME,
+    MONTH(TRANSACTION_DATE) AS TR_MONTH_NUMBER,
+    -- TO_CHAR(TRANSACTION_DATE,'DD') AS TR_DAY,
+    -- DAY(TRANSACTION_DATE) AS DAY,
+    DAYNAME(TRANSACTION_DATE) AS DAYNAME,
+CASE
+    WHEN
+        DAYNAME(TRANSACTION_DATE) NOT IN ('Sat','Sun') THEN 'WEEKDAYS'
+    ELSE
+        'WEEKEND'
+END AS WEEKEND_WEEKDAYS
+FROM SALES_DATA;
+
+SELECT 
+    PRODUCT_CATEGORY,
+    COUNT(CASE WHEN TR_YEAR = '2023' THEN UNITS_SOLD END) AS TOTAL_TR_2023,
+    SUM(CASE WHEN TR_YEAR = '2023' THEN SALES_AMOUNT END) AS TOTAL_SALES_2023,
+    SUM(CASE WHEN TR_YEAR = '2023' THEN UNITS_SOLD END) AS TOTAL_UNIT_SOLD_2023,
+
+    COUNT(CASE WHEN TR_YEAR = '2022' THEN UNITS_SOLD END) AS TOTAL_TR_2022,
+    SUM(CASE WHEN TR_YEAR = '2022' THEN SALES_AMOUNT END) AS TOTAL_SALES_2022,
+    SUM(CASE WHEN TR_YEAR = '2022' THEN UNITS_SOLD END) AS TOTAL_UNIT_SOLD_2022,
+
+    SUM(CASE WHEN TR_YEAR = '2021' THEN UNITS_SOLD END) AS TOTAL_TR_2021,
+    SUM(CASE WHEN TR_YEAR = '2021' THEN SALES_AMOUNT END) AS TOTAL_SALES_2021,
+    SUM(CASE WHEN TR_YEAR = '2021' THEN UNITS_SOLD END) AS TOTAL_UNIT_SOLD_2021,
+
+    SUM(CASE WHEN TR_YEAR = '2020' THEN UNITS_SOLD END) AS TOTAL_TR_2020,
+    SUM(CASE WHEN TR_YEAR = '2020' THEN SALES_AMOUNT END) AS TOTAL_SALES_2020,
+    SUM(CASE WHEN TR_YEAR = '2020' THEN UNITS_SOLD END) AS TOTAL_UNIT_SOLD_2020,
+
+    SUM(CASE WHEN TR_YEAR = '2019' THEN UNITS_SOLD END) AS TOTAL_TR_2019,
+    SUM(CASE WHEN TR_YEAR = '2019' THEN SALES_AMOUNT END) AS TOTAL_SALES_2019,
+    SUM(CASE WHEN TR_YEAR = '2019' THEN UNITS_SOLD END) AS TOTAL_UNIT_SOLD_2019,
+FROM SALES_DATA_OUTPUT
+GROUP BY PRODUCT_CATEGORY
+ORDER BY PRODUCT_CATEGORY;
+
+SELECT * FROM SALES_DATA_OUTPUT;
+
+SELECT
+    PRODUCT_CATEGORY,
+    TR_YEAR,
+    TR_MONTH_NUMBER,
+    DAYNAME,
+    COUNT(TRANSACTION_ID) AS TOTAL_COUNT
+FROM SALES_DATA_OUTPUT
+GROUP BY PRODUCT_CATEGORY,TR_YEAR,TR_MONTH_NUMBER,DAYNAME
+HAVING TOTAL_COUNT > 10
+ORDER BY PRODUCT_CATEGORY,TR_YEAR,TR_MONTH_NUMBER,DAYNAME;
+
+CREATE OR REPLACE TABLE SALES_KPI AS
+SELECT
+    PRODUCT_CATEGORY,
+    TR_YEAR,
+    TR_MONTH_NUMBER,
+    DAYNAME,
+    COUNT(TRANSACTION_ID) AS TOTAL_COUNT
+FROM SALES_DATA_OUTPUT
+GROUP BY PRODUCT_CATEGORY,TR_YEAR,TR_MONTH_NUMBER,DAYNAME
+ORDER BY TOTAL_COUNT DESC;
+
+
+
+
+CREATE OR REPLACE TABLE SALES_KPI_BUCKET AS
+SELECT * ,
+CASE 
+    WHEN TOTAL_COUNT < 5 THEN '1X-5X'
+    WHEN TOTAL_COUNT >= 5 AND TOTAL_COUNT < 10 THEN '6X-10X'
+    WHEN TOTAL_COUNT >= 10 AND TOTAL_COUNT < 15 THEN '10X-15X'
+    ELSE '15X'
+END AS TRANSACTION_COUNT_BUCKET
+FROM SALES_KPI;
+
+SELECT
+    TRANSACTION_COUNT_BUCKET,
+    COUNT(TRANSACTION_COUNT_BUCKET) AS COUNT
+FROM SALES_KPI_BUCKET
+GROUP BY TRANSACTION_COUNT_BUCKET
+ORDER BY TRANSACTION_COUNT_BUCKET;
+
+
+
+-- Use Case 1: Sales Performance Analysis by Product Category
+-- Scenario: You have a dataset of sales transactions over the last 4 years, with columns like transaction_id, product_category, transaction_date, sales_amount, and region.
+
+-- Objective: You want to analyze total sales per product category over the last 4 years, focusing on categories with at least $500,000 in sales.
+
+SELECT
+    PRODUCT_CATEGORY,
+    ROUND(SUM(SALES_AMOUNT),2) AS TOTAL_SALES
+FROM SALES_DATA
+GROUP BY PRODUCT_CATEGORY
+HAVING SUM(SALES_AMOUNT) > 500000
+ORDER BY TOTAL_SALES DESC;
+
+SELECT * FROM SALES_DATA;
+
+    
+--GROUP BY: Groups the data by product_category to calculate total sales for each category.
+--HAVING: Filters the results to only include categories with total sales above $500,000.
+--ORDER BY: Sorts the categories based on total sales in descending order, so the top-performing categories appear first.
+
+CREATE OR REPLACE TABLE sales_data_with_null (
+    transaction_id INT PRIMARY KEY,
+    transaction_date DATE,
+    product_category VARCHAR(50),
+    customer_id INT,
+    product_id INT,
+    region VARCHAR(50),
+    sales_amount DECIMAL(10, 2),
+    units_sold INT
+);
+
+select * from sales_data_with_null where region is null;
+
+--Use Case 2: Monthly Revenue Trends by Region
+--Scenario: A retail company has monthly sales data over the past 4 years with columns like region, month, year, and revenue.
+
+-- Objective: Analyze the revenue trends by region and identify regions that have consistently performed well.
+
+SELECT 
+    NVL(region, 'Unspecified') AS region, 
+    year(transaction_date) as TXN_YR, 
+    quarter(transaction_date) AS TXN_QTR,
+    month(transaction_date) AS TXN_MNTH,
+    count(distinct customer_id) as total_customer,
+    count(transaction_id) as total_txns,
+    sum(units_sold) as total_units_sold,
+    round(SUM(sales_amount),0) AS total_rev,
+    round(AVG(sales_amount),0) AS avg_rev,
+    round(sum(units_sold)/count(transaction_id),0) as UPT,
+    round(count(transaction_id)/ count(distinct customer_id),0) as TPC
+     
+FROM sales_data
+GROUP BY region, year(transaction_date),quarter(transaction_date),month(transaction_date)
+having UPT > 1
+ORDER BY region, year(transaction_date),quarter(transaction_date),month(transaction_date);
+    
+--GROUP BY: Aggregates revenue data by region, year, and month to calculate monthly totals for each region.
+--ORDER BY: Orders the result set by region, year, and month to visualize trends over time.
+
+-- Use Case 3: Customer Lifetime Value (CLTV) Calculation
+-- Scenario: You are working with customer transaction data over the last 4 years, with columns like customer_id, transaction_amount, transaction_date, and region.
+
+-- Objective: Calculate the total value of each customer’s transactions over 4 years and filter for customers whose lifetime value is greater than $10,000.
+
+SELECT 
+    customer_id, 
+    SUM(SALES_AMOUNT) AS lifetime_value
+FROM 
+    sales_data
+GROUP BY 
+    customer_id
+HAVING 
+    SUM(SALES_AMOUNT) > 10000
+ORDER BY 
+    lifetime_value DESC;
+    
+--GROUP BY: Groups data by customer_id to calculate total transaction amounts for each customer.
+--HAVING: Filters customers whose lifetime transaction value exceeds $10,000.
+---ORDER BY: Sorts customers by their lifetime value in descending order.
+
+--Use Case 4: Product Inventory Turnover
+--Scenario: You have inventory data with columns like product_id, month, year, units_sold, and units_in_stock.
+--Objective: Identify products that have sold more than 1,000 units in any given month and order them by sales volume.
+
+SELECT 
+    product_id, 
+    year(transaction_date) as TXN_YR, 
+    month(transaction_date) AS TXN_MNTH,  
+    SUM(units_sold) AS total_units_sold
+FROM 
+    SALES_DATA
+GROUP BY 
+    product_id,
+    year(transaction_date),
+    month(transaction_date)
+HAVING 
+    SUM(units_sold) > 10
+ORDER BY 
+    total_units_sold DESC;
+    
+--GROUP BY: Groups data by product_id, year, and month to calculate total units sold per product per month.
+--HAVING: Filters products with sales greater than 1,000 units in any month.
+--ORDER BY: Sorts products by sales volume, starting with the highest-selling products.
