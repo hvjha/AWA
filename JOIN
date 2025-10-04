@@ -1,0 +1,326 @@
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE COMPUTE_WH;
+CREATE DATABASE IF NOT EXISTS CLASS_JOIN;
+USE DATABASE CLASS_JOIN;
+CREATE SCHEMA IF NOT EXISTS CLASS_JOIN_SCHEMA;
+
+CREATE TABLE IF NOT EXISTS CUSTOMERS(
+    CUSTOMER_ID INT NOT NULL,
+    CUSTOMER_NAME VARCHAR(50),
+    COUNTRY VARCHAR(50)
+);
+
+INSERT INTO CUSTOMERS(CUSTOMER_ID,CUSTOMER_NAME,COUNTRY)
+VALUES
+(1,  'John Doe',      'USA'),
+(2,  'Jane Smith',    'UK'),
+(3,  'David Brown',   'Canada'),
+(4,  'Emily White',   'Australia'),
+(5,  'Michael Green', 'USA'),
+(6,  'Anna Taylor',   'USA'),
+(7,  'Robert King',   'UK'),
+(8,  'Laura Wilson',  'Australia'),
+(9,  'James Davis',   'Canada'),
+(10, 'Sophia Harris', 'USA'),
+(11, 'Chris Evans',   'Australia'),
+(12, 'Jessica Adams', 'Canada'),
+(13, 'Lucas Block',   'USA'),
+(14, 'Olivia Walker','UK'),
+(15, 'Nathan Scott',  'USA'),
+(16, 'Emma Stone',    'Australia'),
+(17, 'Daniel Lewis',  'UK'),
+(18, 'Sophia Clark',  'Canada'),
+(19, 'Liam Johnson',  'Australia'),
+(20, 'Amelia Brown',  'USA');
+
+
+
+CREATE TABLE IF NOT EXISTS ORDERS(
+    ORDER_ID INT NOT NULL,
+    ORDER_DATE DATE,
+    CUSTOMER_ID INT,
+    AMOUNT NUMBER
+);
+
+INSERT INTO ORDERS (ORDER_ID, ORDER_DATE, CUSTOMER_ID, AMOUNT)
+VALUES
+(101,'2025-01-10',1,250.75),
+(102,'2025-01-15',2,20),
+(103,'2025-01-20',3,450.5),
+(104,'2025-02-01',1,120.9),
+(105,'2025-02-05',2,310.5),
+(106,'2025-02-15',NULL,400.25),
+(107,'2025-02-20',4,150),
+(108,'2025-02-25',5,500.75),
+(109,'2025-03-01',7,225.5),
+(110,'2025-03-03',6,52075),
+(111,'2025-03-10',9,310.5),
+(112,'2025-03-12',NULL,230.99),
+(113,'2025-03-15',8,150.2),
+(114,'2025-03-18',11,475.65),
+(115,'2025-03-20',12,54.9),
+(116,'2025-03-22',15,405.5),
+(117,'2025-03-25',13,675),
+(118,'2025-03-26',14,399.99),
+(119,'2025-03-28',15,399.99),
+(120,'2025-03-23',NULL,405.5),
+(121,'2025-03-27',17,675),
+(122,'2025-03-26',NULL,399.99),
+(123,'2025-03-28',19,399.99),
+(124,'2025-03-29',20,399.99);
+
+SELECT * FROM CUSTOMERS;
+SELECT * FROM ORDERS;
+
+/* Find the list of customer who placed atleast one order */
+SELECT
+    C.CUSTOMER_ID,
+    C.CUSTOMER_NAME,
+    C.COUNTRY,
+    O.ORDER_ID,
+    O.ORDER_DATE,
+    O.CUSTOMER_ID,
+    O.AMOUNT
+FROM CUSTOMERS AS C
+JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID;
+
+/* find the total amount of all orders placed by each customer */
+
+SELECT
+    C.CUSTOMER_ID,
+    C.CUSTOMER_NAME,
+    SUM(O.AMOUNT) AS TOTAL_AMOUNT
+FROM CUSTOMERS AS C
+JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID
+GROUP BY C.CUSTOMER_ID,C.CUSTOMER_NAME
+ORDER BY CUSTOMER_ID;
+
+/* Find the details of orders placed by customers from the usa*/
+
+SELECT *
+FROM CUSTOMERS AS C
+JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID
+WHERE C.COUNTRY = 'USA';
+
+/*Find the list of all customers who have placed atleast one order. Note that you need to display all the customers*/
+SELECT
+    C.CUSTOMER_ID,
+    C.CUSTOMER_NAME,
+    C.COUNTRY,
+    O.ORDER_ID,
+    O.ORDER_DATE,
+    O.CUSTOMER_ID,
+    O.AMOUNT
+FROM CUSTOMERS AS C
+LEFT JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID;
+
+/*Find the total number of orders for each customer from USA. Including customers who haven't placed any orders sort the customers based on the count of their orders in ASC*/
+SELECT
+    C.CUSTOMER_ID,
+    C.CUSTOMER_NAME,
+    C.COUNTRY,
+    COUNT(O.CUSTOMER_ID) AS ORDERS
+FROM CUSTOMERS AS C
+LEFT JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID
+WHERE C.COUNTRY = 'USA'
+GROUP BY 1,2,3
+ORDER BY 1;
+/*Retrive list of all customers and COUNT Of the order but show only those who have placed fewer then two orders or no orders */
+SELECT
+    C.CUSTOMER_ID,
+    C.CUSTOMER_NAME,
+    C.COUNTRY,
+    COUNT(O.CUSTOMER_ID) AS ORDERS
+FROM CUSTOMERS AS C
+LEFT JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID
+GROUP BY 1,2,3
+HAVING ORDERS <2
+ORDER BY 1;
+
+/*WRITE A SQL QUERY TO GET THE CUSTOMER FROM BOTH USA AND UK
+NOTE THAT YOU HAVE TO DISPLAY THE SUM OF TOTAL ORDERS AMOUNT FOR EACH CUSTOMER AS WELL
+IF THE CUSTOMER HAS TOTAL ORDER AMOUNT AS 0 OR NULL THEN HE/SHE MUST BE ASSIGNED WITH NO ORDERS OR ELSE SUM OF 
+ORDER AMOUNT
+*/
+SELECT
+    C.CUSTOMER_ID,
+    C.CUSTOMER_NAME,
+    C.COUNTRY,
+    CASE
+        WHEN
+            SUM(O.AMOUNT) IS NULL THEN 'No Orders'
+        ELSE
+         CAST(SUM(O.AMOUNT) AS VARCHAR)
+    END AS TOTAL_ORDERS
+FROM CUSTOMERS AS C
+LEFT JOIN ORDERS AS O
+ON C.CUSTOMER_ID = O.CUSTOMER_ID
+WHERE C.COUNTRY IN ('USA','UK')
+GROUP BY 1,2,3
+ORDER BY 1;
+
+
+
+CREATE TABLE IF NOT EXISTS Employee(
+    empId INT PRIMARY KEY,
+    name VARCHAR(50),
+    supervisor INT,
+    salary INT
+);
+
+INSERT INTO Employee (empId,name,supervisor,salary)
+VALUES
+(3,'Brad',NULL,4000),
+(1,'Jhon',3,1000),
+(2,'Dan',3,2000),
+(4,'Thomas',3,4000);
+
+CREATE TABLE IF NOT EXISTS Bonus(
+    empId INT PRIMARY KEY,
+    bonus INT
+);
+
+INSERT INTO Bonus (empId,bonus)
+VALUES
+(2,500),
+(4,2000);
+
+SELECT * FROM Employee;
+SELECT * FROM Bonus;
+
+/*write a solution to report the name and bonus amount of each employee with bonus less than 100.
+return result table in any order*/
+
+SELECT
+    emp.empId,
+    emp.name,
+    emp.salary,
+    Gift.bonus
+FROM Employee as emp
+LEFT JOIN Bonus as Gift
+ON emp.empId = Gift.empId
+WHERE Gift.bonus < 1000 OR Gift.bonus IS NULL;
+
+CREATE TABLE IF NOT EXISTS course(
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(50),
+    course_desc VARCHAR(100),
+    course_tag VARCHAR(20)
+);
+
+INSERT INTO course (course_id,course_name,course_desc,course_tag)
+VALUES
+(101,'Mathematics','Advance Mathematics Course','Math'),
+(102,'Physics','Basics Of Physics','Physics'),
+(103,'Chemistry','Chemistry for Beginners','Chemistry'),
+(104,'Biology','Introduction to Biology','Biology'),
+(105,'Computer Science','Learn Programming','CS'),
+(106,'English Literature','ShakespeareanStudies', 'English');
+
+CREATE TABLE IF NOT EXISTS student(
+    student_id INT PRIMARY KEY,
+    student_name VARCHAR(50),
+    student_mobile BIGINT,
+    student_course_enroll VARCHAR(50),
+    student_course_id INT
+);
+
+INSERT INTO student(student_id,student_name,student_mobile,student_course_enroll,student_course_id)
+VALUES
+(201,'Alice',9807654321,'Mathematics','101'),
+(202,'Bob',9086754321,'Physics',102),
+(203,'Charle',9870123456,'Computer Science',105),
+(204,'David',6234157890,'Mathematics',101),
+(205,'Eve',6213450987,'Biology',104),
+(206,'Frank',9110163868,'Philosophy',NULL),
+(207,'Grace',8360029150,'Chemistry',103);
+
+CREATE TABLE IF NOT EXISTS instructor(
+    instructor_id INT PRIMARY KEY,
+    instructor_name VARCHAR(50),
+    course_id INT
+);
+
+INSERT INTO instructor (instructor_id,instructor_name,course_id)
+VALUES
+(301,'Dr. Smith',101),
+(302,'Dr. Johnson',102),
+(303,'Dr. Lee',103),
+(304,'Dr. White',104),
+(305,'Prof. Davis',105);
+
+/*list all students and the courses they are enrolled in including students who are not enrolled in any course and 
+courses that have no students*/
+SELECT
+    s.student_id,
+    s.student_name,
+    s.student_course_id,
+    C.course_name,
+    C.course_id,
+FROM student as s
+FULL JOIN course AS C
+ON C.course_id = s.student_course_id
+ORDER BY s.student_course_id;
+
+/*Display all the students along with their enrolled courses and the instructors teaching those courses*/
+SELECT
+    s.student_id,
+    s.student_name,
+    c.course_id,
+    c.course_name,
+    i.instructor_id,
+    i.instructor_name
+FROM student as s
+JOIN course as c
+ON s.student_course_id = c.course_id
+JOIN instructor as i
+ON i.course_id = c.course_id;
+
+SELECT
+    s.student_id,
+    s.student_name,
+    c.course_id,
+    c.course_name,
+    i.instructor_id,
+    i.instructor_name
+FROM student as s
+LEFT JOIN course as c
+ON s.student_course_id = c.course_id
+LEFT JOIN instructor as i
+ON i.course_id = c.course_id;
+
+CREATE TABLE IF NOT EXISTS Weather(
+    id INT PRIMARY KEY,
+    recordDate DATE,
+    temperature INT
+);
+
+INSERT INTO Weather (id,recordDate,temperature)
+VALUES
+(1,'2015-01-01',10),
+(2,'2015-01-02',25),
+(3,'2015-01-03',20),
+(4,'2015-01-04',30);
+
+SELECT * FROM Weather;
+
+/*write a solution to find all dates id with higher temperature compared to it's previous date*/
+SELECT
+    T2.id,
+    T2.recordDate,
+    T2.temperature,
+    T1.recordDate,
+    T1.temperature,
+    T1.id
+FROM Weather as T1
+JOIN weather as T2
+ON T1.recordDate = T2.recordDate + 1
+WHERE T1.temperature > T2.temperature;
+
+ 
