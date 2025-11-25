@@ -1,0 +1,10 @@
+Hello word 
+ welcome to the world of analytics
+ Its python lecture no 22 
+ Harsh
+ Muskan
+ Prachi
+ AnandHello Harsh
+ Hi Muskan
+ Hi Prachi
+ Hello Anand
