@@ -1,0 +1,45 @@
+USE ROLE ACCOUNTADMIN;
+USE WAREHOUSE COMPUTE_WH;
+CREATE DATABASE IF NOT EXISTS keysinsql_db;
+CREATE SCHEMA IF NOT EXISTS keysinsql_schema;
+USE DATABASE keysinsql_db;
+USE SCHEMA keysinsql_schema;
+
+--college enrollment system
+
+/*
+you are designing a simple college enrollment system for university.The System manages students, courses,departents,and enrollments.
+your goal is to:
+1.maintain data integrity
+2.Avoid duplicate data
+3.Establish relationships between entities
+
+Entities Involved
+1.students(student info)
+2.Departments (college department)
+3.Courses(offered under department
+4.Enrollments(which students enroll in which courses))
+*/
+--LETS START WITH STUDENT DATA
+CREATE TABLE IF NOT EXISTS student_data(
+    student_id INT,
+    student_name VARCHAR(50),
+    student_phn VARCHAR(50),
+    student_age INT,
+    student_gender VARCHAR(20),
+    PRIMARY KEY (student_id),
+    Unique (student_phn)
+);
+DROP TABLE student_data;
+describe table student_data;
+INSERT INTO student_data VALUES
+ (1, 'Amit Kumar',  '+919876543210', 20, 'Male'),
+  (2, 'Priya Singh', '+919123456780', 22, 'Female'),
+  (3, 'Rohan Das',   '+919812345678', 19, 'Male'),
+  (4, 'Sneha Roy',   '+919901234567', 21, 'Female'),
+  (5, 'Vikram Mehta','+919798123456', 23, 'Male'),
+  (6, 'Vikram Sharma',NULL, 24, 'Male'),
+  (7,'Harsh','+919876543210',23,'Male');
+
+  TRUNCATE TABLE student_data;
+  SELECT * FROM student_data;
